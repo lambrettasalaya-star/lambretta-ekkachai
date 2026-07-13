@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- *  Code.gs — Backend ระบบบันทึกเวลาทำงาน + เช็กอินหน้างาน (standalone)
+ *  Code.gs — Backend ระบบบันทึกเวลาทำงานเข้า-ออก (standalone)
  * ----------------------------------------------------------------------------
  *  วิธีติดตั้ง:
  *  1) สร้าง Google Sheet เปล่าใหม่ 1 ไฟล์ (ชื่ออะไรก็ได้)
@@ -22,7 +22,6 @@
  *  ชีตจะถูกสร้างให้อัตโนมัติเมื่อใช้งานครั้งแรก:
  *    - Faces_Salaya / Faces_Kanchana / Faces_Ekkachai : ฐานข้อมูลใบหน้าแยกสาขา
  *    - Salaya / Kanchana / Ekkachai                    : บันทึกเวลาเข้า-ออกงานแยกสาขา
- *    - Engineer_Salaya / Engineer_Kanchana / Engineer_Ekkachai : เช็กอินหน้างานแยกสาขา
  *    - Config       : พิกัด GPS + รัศมีที่อนุญาต
  * ============================================================================
  */
@@ -40,9 +39,7 @@ function doGet(e) {
     if (action === 'getConfig')            return json_(getConfig_(e.parameter.scope, e.parameter.site));
     if (action === 'getKnownFaces')        return json_(getKnownFaces_(e.parameter.site));
     if (action === 'getTodayAttendance')   return json_(getTodayAttendance_(e.parameter.site));
-    if (action === 'getTodaySiteCheckin')  return json_(getTodaySiteCheckin_(e.parameter.site));
     if (action === 'checkAdmin')           return json_({ ok: checkAdmin_(e.parameter.adminKey, e.parameter.site) });
-    if (action === 'debugToday')           return json_(debugToday_(e.parameter.site));
     return json_({ error: 'unknown_action', message: 'ไม่รู้จัก action: ' + action });
   } catch (err) {
     return json_({ error: 'server_error', message: String(err) });
@@ -123,8 +120,7 @@ function migrateSalayaSheets_() {
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var names = [
     ['Saraya', 'Salaya'],
-    ['Faces_Saraya', 'Faces_Salaya'],
-    ['Engineer_Saraya', 'Engineer_Salaya']
+    ['Faces_Saraya', 'Faces_Salaya']
   ];
   names.forEach(function (pair) {
     var oldSheet = ss.getSheetByName(pair[0]);
@@ -145,7 +141,6 @@ function migrateSalayaSheets_() {
 
 function facesSheet_(site)      { if (siteCode_(site) === 'salaya') migrateSalayaSheets_(); return ensureSheet_('Faces_' + siteLabel_(site), ['ชื่อ', 'Descriptor', 'วันที่ลงทะเบียน']); }
 function attendanceSheet_(site) { if (siteCode_(site) === 'salaya') migrateSalayaSheets_(); return ensureSheet_(siteLabel_(site), ['วันที่', 'ชื่อ', 'เวลาเข้า', 'เวลาออก', 'Lat', 'Lng', 'Google Map Link', 'หมายเหตุ']); }
-function siteSheet_(site)       { if (siteCode_(site) === 'salaya') migrateSalayaSheets_(); return ensureSheet_('Engineer_' + siteLabel_(site), ['วันที่', 'เวลา', 'ชื่อ', 'Lat', 'Lng', 'Google Map Link', 'หมายเหตุ']); }
 function configSheet_()     { return ensureSheet_('Config',       ['key', 'value']); }
 
 function today_()   { return Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd'); }
@@ -197,9 +192,8 @@ function cellTime_(v) {
 
 // ---------------------------------------------------------------- actions: GET
 
-// GPS แยกกันคนละระบบ ในแท็บ Config เดียวกัน:
-//   scope ว่าง        = ระบบเช็กอินหน้างาน  → คีย์ lat / lng / radius (ของเดิม)
-//   scope=attendance  = ระบบบันทึกเวลาทำงาน → คีย์ att_lat / att_lng / att_radius
+// GPS ระบบบันทึกเวลาทำงาน ใช้ scope=attendance
+// คีย์แยกตามสาขา เช่น salaya_att_lat / kanchana_att_lat / ekkachai_att_lat
 function configPrefix_(scope, site) {
   return siteCode_(site) + '_' + (scope === 'attendance' ? 'att_' : '');
 }
@@ -214,6 +208,18 @@ function getConfig_(scope, site) {
     if (k === prefix + 'lat')    config.lat    = Number(data[i][1]) || '';
     if (k === prefix + 'lng')    config.lng    = Number(data[i][1]) || '';
     if (k === prefix + 'radius') config.radius = Number(data[i][1]) || 0;
+  }
+
+  // ใช้ค่าพิกัดเดิมเป็นค่าเริ่มต้น เพื่อให้เปลี่ยนจากระบบเช็กอินเดิมมาเป็นลงเวลาได้ทันที
+  // เมื่อผู้ดูแลกดบันทึกใหม่ ค่าจะถูกเก็บในคีย์ *_att_* แยกจากค่าระบบเดิม
+  if (scope === 'attendance' && (!config.lat || !config.lng)) {
+    var legacyPrefix = siteCode_(site) + '_';
+    for (var j = 1; j < data.length; j++) {
+      var legacyKey = String(data[j][0]);
+      if (legacyKey === legacyPrefix + 'lat')    config.lat    = Number(data[j][1]) || '';
+      if (legacyKey === legacyPrefix + 'lng')    config.lng    = Number(data[j][1]) || '';
+      if (legacyKey === legacyPrefix + 'radius') config.radius = Number(data[j][1]) || 0;
+    }
   }
   return config;
 }
@@ -251,40 +257,6 @@ function getTodayAttendance_(site) {
   return rows;
 }
 
-function getTodaySiteCheckin_(site) {
-  var sheet = siteSheet_(site);
-  var data = sheet.getDataRange().getValues();
-  var today = today_();
-  var rows = [];
-  for (var i = 1; i < data.length; i++) {
-    if (cellDate_(data[i][0]) !== today) continue;
-    rows.push({
-      'เวลา':            cellTime_(data[i][1]),
-      'ชื่อ':            String(data[i][2] || ''),
-      'Google Map Link': String(data[i][5] || ''),
-      'หมายเหตุ':        String(data[i][6] || '')
-    });
-  }
-  return rows;
-}
-
-// ตัวช่วยไล่ปัญหา "เช็กอินแล้วไม่ขึ้นในเว็บ" — เปิด <URL>/exec?action=debugToday&key=<APP_KEY>
-// จะโชว์ว่าระบบมองว่า "วันนี้" คืออะไร และอ่านวันที่ของ 5 แถวล่าสุดในชีตได้เป็นอะไร
-function debugToday_(site) {
-  var sheet = siteSheet_(site);
-  var data = sheet.getDataRange().getValues();
-  var rows = [];
-  for (var i = Math.max(1, data.length - 5); i < data.length; i++) {
-    rows.push({
-      row: i + 1,
-      rawDate: String(data[i][0]),
-      parsedDate: cellDate_(data[i][0]),
-      name: String(data[i][2] || '')
-    });
-  }
-  return { today: today_(), lastRows: rows };
-}
-
 // ---------------------------------------------------------------- actions: POST
 
 function registerUser_(body) {
@@ -305,12 +277,6 @@ function logAttendance_(body) {
   var lng  = body.lng  || '';
   var note = String(body.note || '').trim();
   var link = mapLink_(lat, lng);
-
-  // เช็กอินหน้างาน → เพิ่มแถวใหม่ทุกครั้ง (เช็กอินได้หลายรอบต่อวัน)
-  if (body.sheetTarget === 'Engineer' || body.sheetTarget === 'Site_CheckIn') {
-    appendRowWithDate_(siteSheet_(body.site), [new Date(), nowTime_(), name, lat, lng, link, note]);
-    return { message: 'เช็กอินหน้างานสำเร็จ (' + name + ' เวลา ' + nowTime_().substring(0, 5) + ' น.)' };
-  }
 
   // สแกนเข้า-ออกงาน → ครั้งแรกของวัน = เวลาเข้า, ครั้งถัดไป = เวลาออก
   var sheet = attendanceSheet_(body.site);

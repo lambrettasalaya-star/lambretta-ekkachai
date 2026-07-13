@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>เช็กอินหน้างาน</title>
+  <title>สแกนเข้า–ออกงาน</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -222,6 +222,19 @@
       -webkit-text-fill-color: transparent;
       margin-bottom: 14px;
     }
+    .action-badge {
+      padding: 6px 18px; border-radius: 30px;
+      font-size: 14px; font-weight: 700;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: var(--accent);
+    }
+    .action-badge.out {
+      background: #252629;
+      border-color: #55575A;
+      color: #D7D7D7;
+    }
     .time-badge {
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.35);
@@ -296,7 +309,7 @@
   <div class="top-bar">
     <a href="index.html" class="back-btn">← กลับหน้าหลัก</a>
     <img src="icons/zontes-logo.jpg" alt="ZONTES" style="display:block;width:96px;height:96px;object-fit:cover;border-radius:20px;border:1px solid #252629;box-shadow:0 16px 36px rgba(0,0,0,.55);margin:0 auto 16px;">
-    <h2>📍 เช็กอินหน้างาน</h2>
+    <h2>⏰ สแกนเข้า–ออกงาน</h2>
     <div class="spacer"></div>
   </div>
 
@@ -332,12 +345,13 @@
     <div class="modal-avatar">🙋</div>
     <p class="modal-title">ตรวจพบบุคคล</p>
     <div class="user-name" id="modalName">...</div>
+    <div id="modalAction" class="action-badge">🟢 สแกนเข้างาน</div>
     <div id="modalTime" class="time-badge">00:00</div>
     <div id="modalScore" class="score-text"></div>
 
     <input type="text" id="noteInput" class="note-input" placeholder="ใส่หมายเหตุที่นี่ (ถ้ามี)...">
 
-    <button class="btn btn-confirm" id="btnConfirm" onclick="confirmAttendance()">✅ ยืนยันเช็กอิน</button>
+    <button class="btn btn-confirm" id="btnConfirm" onclick="confirmAttendance()">✅ ยืนยันบันทึกเวลา</button>
     <button class="btn btn-cancel" onclick="cancelAttendance()">ไม่ใช่ฉัน (สแกนใหม่)</button>
   </div>
 </div>
@@ -364,6 +378,7 @@
   const MIN_DETECT_SCORE = 0.6;
 
   let knownFaces   = [];
+  let checkedInToday = {};
   let scanInterval = null;
   let currentMatch = null;
   let currentLat   = null;
@@ -398,7 +413,7 @@
           currentLng = pos.coords.longitude;
 
           try {
-            const config = await fetch(API_URL + '?action=getConfig&key=' + encodeURIComponent(APP_KEY) + '&site=' + encodeURIComponent(SITE_CODE)).then(r => r.json());
+            const config = await fetch(API_URL + '?action=getConfig&scope=attendance&key=' + encodeURIComponent(APP_KEY) + '&site=' + encodeURIComponent(SITE_CODE)).then(r => r.json());
 
             if (config.error === 'unauthorized') {
               reject(new Error(config.message || 'App Key ไม่ถูกต้อง'));
@@ -466,11 +481,27 @@
         descriptor: new Float32Array(u.descriptor)
       }));
 
+      await loadTodayStatus();
+
       mainStatus.innerText    = '✅ ระบบพร้อมใช้งาน';
       mainStatus.style.color  = '#D7D7D7';
       btnStart.style.display  = 'inline-block';
     } catch (e) {
       showError('โหลดฐานข้อมูลล้มเหลว: ' + e.message);
+    }
+  }
+
+  async function loadTodayStatus() {
+    try {
+      const rows = await fetch(API_URL + '?action=getTodayAttendance&key=' + encodeURIComponent(APP_KEY) + '&site=' + encodeURIComponent(SITE_CODE)).then(r => r.json());
+      checkedInToday = {};
+      if (Array.isArray(rows)) {
+        rows.forEach(row => {
+          if (row['ชื่อ']) checkedInToday[row['ชื่อ']] = true;
+        });
+      }
+    } catch (e) {
+      // ป้ายเข้า/ออกเป็นข้อมูลช่วยแสดงผลเท่านั้น การบันทึกจริงให้ backend ตัดสินเสมอ
     }
   }
 
@@ -582,6 +613,15 @@
     document.getElementById('modalName').innerText  = match.name;
     document.getElementById('noteInput').value = '';
 
+    const actionEl = document.getElementById('modalAction');
+    if (checkedInToday[match.name]) {
+      actionEl.innerText = '⚪ สแกนออกงาน';
+      actionEl.className = 'action-badge out';
+    } else {
+      actionEl.innerText = '🟢 สแกนเข้างาน';
+      actionEl.className = 'action-badge';
+    }
+
     const now = new Date();
     const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
     document.getElementById('modalTime').innerText  = 'เวลาที่สแกน: ' + timeStr + ' น.';
@@ -610,18 +650,17 @@
             name: currentMatch,
             lat: currentLat,
             lng: currentLng,
-            note: note,
-            sheetTarget: "Engineer"
+            note: note
         })
       });
       const data = await res.json();
       if (data.error) throw new Error(data.message || data.error);
-      alert('✅ ' + (data.message || 'เช็กอินสำเร็จ'));
+      alert('✅ ' + (data.message || 'บันทึกเวลาสำเร็จ'));
       window.location.href = 'index.html';
     } catch (e) {
       alert('❌ บันทึกล้มเหลว: ' + e.message);
       btn.disabled  = false;
-      btn.innerText = '✅ ยืนยันเช็กอิน';
+      btn.innerText = '✅ ยืนยันบันทึกเวลา';
     }
   }
 

@@ -190,7 +190,7 @@
     <a href="index.html" class="back-btn">← กลับหน้าหลัก</a>
     <img src="icons/zontes-logo.jpg" alt="ZONTES" style="display:block;width:96px;height:96px;object-fit:cover;border-radius:20px;border:1px solid #252629;box-shadow:0 16px 36px rgba(0,0,0,.55);margin:0 auto 16px;">
     <h2>⚙️ ตั้งค่าระบบ</h2>
-    <p class="page-subtitle">จัดการ API และจุดเช็คอิน GPS</p>
+    <p class="page-subtitle">จัดการ API และจุดลงเวลา GPS</p>
   </div>
 
   <!-- API URL Card -->
@@ -213,7 +213,7 @@
   <div class="card">
     <div class="section-header">
       <div class="section-icon">📍</div>
-      <span class="section-title-text">จุดเช็คอิน GPS</span>
+      <span class="section-title-text">จุดลงเวลาเข้า–ออกงาน GPS</span>
     </div>
 
     <button class="btn btn-get-loc" onclick="getCurrentLocation()">
@@ -282,7 +282,7 @@
   }
 
   function loadGpsConfig(apiUrl) {
-    fetch(apiUrl + '?action=getConfig&key=' + encodeURIComponent(appKey()) + '&site=' + encodeURIComponent(SITE_CODE))
+    fetch(apiUrl + '?action=getConfig&scope=attendance&key=' + encodeURIComponent(appKey()) + '&site=' + encodeURIComponent(SITE_CODE))
       .then(r => r.json())
       .then(config => {
         if (config.error) return;
@@ -326,6 +326,7 @@
           action: 'saveConfig',
           key: key,
           site: SITE_CODE,
+          scope: 'attendance',
           adminKey: ADMIN_SECRET_KEY,
           lat, lng, radius
         })

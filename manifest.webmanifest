@@ -4,9 +4,9 @@
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#06151D",
-  "theme_color": "#06151D",
+  "background_color": "#08090A",
+  "theme_color": "#08090A",
   "icons": [
-    { "src": "icons/lambretta.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    { "src": "icons/zontes-logo.jpg", "sizes": "774x774", "type": "image/jpeg", "purpose": "any" }
   ]
 }

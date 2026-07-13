@@ -7,23 +7,23 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="icons/lambretta.svg">
-  <link rel="apple-touch-icon" href="icons/lambretta.svg">
+  <link rel="icon" type="image/jpeg" href="icons/zontes-logo.jpg">
+  <link rel="apple-touch-icon" href="icons/zontes-logo.jpg">
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#06151D">
+  <meta name="theme-color" content="#08090A">
   <script src="js/api-config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.js"></script>
   <style>
     :root {
-      --bg: #06151D;
-      --surface: #0B222E;
-      --surface-2: #0E2B36;
-      --border: #144A46;
-      --border-strong: #1E6B65;
-      --accent: #4AF2D7;
-      --accent-2: #3DE0C6;
-      --text: #D1F7F2;
-      --muted: #86ABA6;
+      --bg: #08090A;
+      --surface: #121315;
+      --surface-2: #1F2022;
+      --border: #252629;
+      --border-strong: #3A3B3E;
+      --accent: #FFFFFF;
+      --accent-2: #D7D7D7;
+      --text: #F4F4F4;
+      --muted: #A0A1A3;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,9 +32,7 @@
       font-family: 'Prompt', sans-serif;
       min-height: 100vh;
       background: var(--bg);
-      background-image:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(74, 242, 215, 0.10), transparent 60%),
-        radial-gradient(ellipse 60% 40% at 90% 110%, rgba(30, 107, 101, 0.18), transparent 60%);
+      background-image: radial-gradient(circle at 50% 35%, #121315 0%, #08090A 62%, #000000 100%);
       background-attachment: fixed;
       color: var(--text);
       display: flex;
@@ -68,7 +66,7 @@
 
     h2 {
       font-size: 1.5em; font-weight: 700;
-      background: linear-gradient(180deg, #FFFFFF 0%, #D1F7F2 100%);
+      background: linear-gradient(180deg, #FFFFFF 0%, #F4F4F4 100%);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -90,7 +88,7 @@
     }
     .dot.active {
       background: var(--accent);
-      box-shadow: 0 0 12px rgba(74, 242, 215, 0.7);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
     }
 
     /* Status */
@@ -114,7 +112,7 @@
       border-radius: 20px;
       overflow: hidden;
       border: 2px solid var(--border-strong);
-      box-shadow: 0 0 25px -5px rgba(74, 242, 215, 0.3), 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 25px -5px rgba(255, 255, 255, 0.3), 0 4px 20px -2px rgba(0, 0, 0, 0.5);
       background: #000000;
       width: 100%;
       max-width: 480px;
@@ -159,17 +157,17 @@
       outline: none;
       transition: all 0.3s ease;
     }
-    .input-group input::placeholder { color: #3D5A57; font-weight: 400; }
+    .input-group input::placeholder { color: #55575A; font-weight: 400; }
     .input-group input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(74, 242, 215, 0.15);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
     }
 
     #btnSave {
       width: 100%;
       padding: 16px;
-      background: linear-gradient(135deg, #4AF2D7 0%, #3DE0C6 100%);
-      color: #06151D;
+      background: linear-gradient(135deg, #FFFFFF 0%, #D7D7D7 100%);
+      color: #08090A;
       border: none;
       border-radius: 16px;
       font-size: 15px;
@@ -178,16 +176,16 @@
       cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 8px;
       transition: all 0.3s ease;
-      box-shadow: 0 0 18px rgba(74, 242, 215, 0.3);
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.3);
     }
     #btnSave:hover:not(:disabled) {
-      background: linear-gradient(135deg, #6FF7E2 0%, #4AF2D7 100%);
+      background: linear-gradient(135deg, #E6E6E6 0%, #FFFFFF 100%);
       transform: translateY(-2px);
-      box-shadow: 0 0 28px rgba(74, 242, 215, 0.5);
+      box-shadow: 0 0 28px rgba(255, 255, 255, 0.5);
     }
     #btnSave:disabled {
       background: var(--surface-2);
-      color: #3D5A57;
+      color: #55575A;
       box-shadow: none;
       cursor: not-allowed;
     }
@@ -205,7 +203,7 @@
       font-size: 0.9em; font-weight: 600;
       text-align: center;
     }
-    .msg-success { color: #4AF2D7; }
+    .msg-success { color: #FFFFFF; }
     .msg-error   { color: #ff6b6b; }
 
     /* Animations */
@@ -217,6 +215,7 @@
 <div class="container">
   <div class="page-header">
     <a href="index.html" class="back-btn">← กลับหน้าหลัก</a>
+    <img src="icons/zontes-logo.jpg" alt="ZONTES" style="display:block;width:96px;height:96px;object-fit:cover;border-radius:20px;border:1px solid #252629;box-shadow:0 16px 36px rgba(0,0,0,.55);margin:0 auto 16px;">
     <h2>👤 ลงทะเบียนใบหน้า</h2>
     <p class="instruction">กดเริ่มเพียงครั้งเดียว แล้วค่อย ๆ หันหน้าไปด้านหนึ่งและหมุนกลับไปอีกด้าน<br>ระบบจะเก็บใบหน้าให้อัตโนมัติ</p>
   </div>

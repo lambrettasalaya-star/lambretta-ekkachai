@@ -10,9 +10,9 @@
  *     ถ้าตั้งไว้ ทุกคำขอต้องแนบรหัสนี้ (กรอกในหน้า "ตั้งค่าระบบ" ของเว็บ)
  *     ถ้าเว้นว่าง = เปิดให้ทุกคนที่รู้ URL ใช้งานได้
  *
- *     ADMIN_SECRET = solarroof1 (ต้องตรงกับ ADMIN_SECRET_KEY ใน config.html)
- *     ใช้ป้องกันการ "แก้ตั้งค่า GPS" — คนที่ไม่รู้รหัสนี้แก้ค่าไม่ได้
- *     ถ้าเว้นว่าง = ใครก็แก้ตั้งค่าได้ (ไม่แนะนำ)
+ *     รหัสผู้ดูแลแยกสาขา (ตั้ง Script Properties เพื่อ override ค่าเริ่มต้นได้):
+ *       ADMIN_SECRET_SALAYA / ADMIN_SECRET_KANCHANA / ADMIN_SECRET_EKKACHAI
+ *     ใช้ป้องกันการ "แก้ตั้งค่า GPS" ของแต่ละสาขา
  *  4) Deploy → New deployment → Web app
  *       - Execute as: Me
  *       - Who has access: Anyone
@@ -20,9 +20,9 @@
  *     หรือกรอกในหน้า config.html
  *
  *  ชีตจะถูกสร้างให้อัตโนมัติเมื่อใช้งานครั้งแรก:
- *    - Faces_Saraya / Faces_Kanchana / Faces_Ekkachai : ฐานข้อมูลใบหน้าแยกสาขา
- *    - Saraya / Kanchana / Ekkachai                    : บันทึกเวลาเข้า-ออกงานแยกสาขา
- *    - Engineer_Saraya / Engineer_Kanchana / Engineer_Ekkachai : เช็กอินหน้างานแยกสาขา
+ *    - Faces_Salaya / Faces_Kanchana / Faces_Ekkachai : ฐานข้อมูลใบหน้าแยกสาขา
+ *    - Salaya / Kanchana / Ekkachai                    : บันทึกเวลาเข้า-ออกงานแยกสาขา
+ *    - Engineer_Salaya / Engineer_Kanchana / Engineer_Ekkachai : เช็กอินหน้างานแยกสาขา
  *    - Config       : พิกัด GPS + รัศมีที่อนุญาต
  * ============================================================================
  */
@@ -41,7 +41,7 @@ function doGet(e) {
     if (action === 'getKnownFaces')        return json_(getKnownFaces_(e.parameter.site));
     if (action === 'getTodayAttendance')   return json_(getTodayAttendance_(e.parameter.site));
     if (action === 'getTodaySiteCheckin')  return json_(getTodaySiteCheckin_(e.parameter.site));
-    if (action === 'checkAdmin')           return json_({ ok: checkAdmin_(e.parameter.adminKey) });
+    if (action === 'checkAdmin')           return json_({ ok: checkAdmin_(e.parameter.adminKey, e.parameter.site) });
     if (action === 'debugToday')           return json_(debugToday_(e.parameter.site));
     return json_({ error: 'unknown_action', message: 'ไม่รู้จัก action: ' + action });
   } catch (err) {
@@ -60,7 +60,7 @@ function doPost(e) {
     if (body.action === 'logAttendance') return json_(logAttendance_(body));
     // saveConfig ต้องแนบรหัสหน้าตั้งค่า (adminKey) ให้ตรงกับ ADMIN_SECRET
     if (body.action === 'saveConfig') {
-      if (!checkAdmin_(body.adminKey)) return json_({ error: 'admin_required', message: 'รหัสเข้าหน้าตั้งค่าไม่ถูกต้อง' });
+      if (!checkAdmin_(body.adminKey, body.site)) return json_({ error: 'admin_required', message: 'รหัสเข้าหน้าตั้งค่าไม่ถูกต้อง' });
       return json_(saveConfig_(body));
     }
     return json_({ error: 'unknown_action', message: 'ไม่รู้จัก action: ' + (body.action || '') });
@@ -78,10 +78,19 @@ function checkKey_(e, body) {
   return String(key) === secret;
 }
 
-function checkAdmin_(key) {
-  var admin = PropertiesService.getScriptProperties().getProperty('ADMIN_SECRET') || '';
-  if (!admin) return true; // ไม่ได้ตั้งรหัสผู้ดูแล = ไม่บังคับ (ไม่แนะนำ)
-  return String(key || '') === admin;
+function adminSecret_(site) {
+  var code = siteCode_(site);
+  var defaults = {
+    salaya: 'lamSalaya01',
+    kanchana: 'lamkanchana01',
+    ekkachai: 'lamekkachai01'
+  };
+  var propertyName = 'ADMIN_SECRET_' + code.toUpperCase();
+  return PropertiesService.getScriptProperties().getProperty(propertyName) || defaults[code];
+}
+
+function checkAdmin_(key, site) {
+  return String(key || '') === adminSecret_(site);
 }
 
 // ---------------------------------------------------------------- sheets
@@ -99,19 +108,44 @@ function ensureSheet_(name, headers) {
 
 function siteCode_(site) {
   var code = String(site || '').toLowerCase();
-  return code === 'kanchana' || code === 'ekkachai' ? code : 'saraya';
+  if (code === 'saraya') return 'salaya'; // รองรับ URL รุ่นเดิมระหว่างเปลี่ยนชื่อ
+  return code === 'kanchana' || code === 'ekkachai' ? code : 'salaya';
 }
 
 function siteLabel_(site) {
   var code = siteCode_(site);
   if (code === 'kanchana') return 'Kanchana';
   if (code === 'ekkachai') return 'Ekkachai';
-  return 'Saraya';
+  return 'Salaya';
 }
 
-function facesSheet_(site)      { return ensureSheet_('Faces_' + siteLabel_(site), ['ชื่อ', 'Descriptor', 'วันที่ลงทะเบียน']); }
-function attendanceSheet_(site) { return ensureSheet_(siteLabel_(site), ['วันที่', 'ชื่อ', 'เวลาเข้า', 'เวลาออก', 'Lat', 'Lng', 'Google Map Link', 'หมายเหตุ']); }
-function siteSheet_(site)       { return ensureSheet_('Engineer_' + siteLabel_(site), ['วันที่', 'เวลา', 'ชื่อ', 'Lat', 'Lng', 'Google Map Link', 'หมายเหตุ']); }
+function migrateSalayaSheets_() {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var names = [
+    ['Saraya', 'Salaya'],
+    ['Faces_Saraya', 'Faces_Salaya'],
+    ['Engineer_Saraya', 'Engineer_Salaya']
+  ];
+  names.forEach(function (pair) {
+    var oldSheet = ss.getSheetByName(pair[0]);
+    if (oldSheet && !ss.getSheetByName(pair[1])) oldSheet.setName(pair[1]);
+  });
+
+  var config = ss.getSheetByName('Config');
+  if (config) {
+    var data = config.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+      var key = String(data[i][0] || '');
+      if (key.indexOf('saraya_') === 0) {
+        config.getRange(i + 1, 1).setValue('salaya_' + key.substring(7));
+      }
+    }
+  }
+}
+
+function facesSheet_(site)      { if (siteCode_(site) === 'salaya') migrateSalayaSheets_(); return ensureSheet_('Faces_' + siteLabel_(site), ['ชื่อ', 'Descriptor', 'วันที่ลงทะเบียน']); }
+function attendanceSheet_(site) { if (siteCode_(site) === 'salaya') migrateSalayaSheets_(); return ensureSheet_(siteLabel_(site), ['วันที่', 'ชื่อ', 'เวลาเข้า', 'เวลาออก', 'Lat', 'Lng', 'Google Map Link', 'หมายเหตุ']); }
+function siteSheet_(site)       { if (siteCode_(site) === 'salaya') migrateSalayaSheets_(); return ensureSheet_('Engineer_' + siteLabel_(site), ['วันที่', 'เวลา', 'ชื่อ', 'Lat', 'Lng', 'Google Map Link', 'หมายเหตุ']); }
 function configSheet_()     { return ensureSheet_('Config',       ['key', 'value']); }
 
 function today_()   { return Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd'); }

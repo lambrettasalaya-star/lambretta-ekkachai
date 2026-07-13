@@ -7,24 +7,24 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="icons/lambretta.svg">
-  <link rel="apple-touch-icon" href="icons/lambretta.svg">
+  <link rel="icon" type="image/jpeg" href="icons/zontes-logo.jpg">
+  <link rel="apple-touch-icon" href="icons/zontes-logo.jpg">
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#06151D">
+  <meta name="theme-color" content="#08090A">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="js/api-config.js"></script>
   <style>
     :root {
-      --bg: #06151D;
-      --bg-2: #0B222E;
-      --surface: #0B222E;
-      --surface-2: #0E2B36;
-      --border: #144A46;
-      --border-strong: #1E6B65;
-      --accent: #4AF2D7;
-      --accent-2: #3DE0C6;
-      --text: #D1F7F2;
-      --muted: #86ABA6;
+      --bg: #08090A;
+      --bg-2: #121315;
+      --surface: #121315;
+      --surface-2: #1F2022;
+      --border: #252629;
+      --border-strong: #3A3B3E;
+      --accent: #FFFFFF;
+      --accent-2: #D7D7D7;
+      --text: #F4F4F4;
+      --muted: #A0A1A3;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,9 +33,7 @@
       font-family: 'Prompt', sans-serif;
       min-height: 100vh;
       background: var(--bg);
-      background-image:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(74, 242, 215, 0.10), transparent 60%),
-        radial-gradient(ellipse 60% 40% at 90% 110%, rgba(30, 107, 101, 0.18), transparent 60%);
+      background-image: radial-gradient(circle at 50% 35%, #121315 0%, #08090A 62%, #000000 100%);
       background-attachment: fixed;
       color: var(--text);
       display: flex;
@@ -62,21 +60,21 @@
       line-height: 1;
     }
     .logo-icon img {
-      width: 72px; height: 72px;
-      border-radius: 18px;
+      width: 128px; height: 128px; object-fit: cover;
+      border-radius: 24px;
       border: 1px solid var(--border-strong);
-      box-shadow: 0 0 24px rgba(74, 242, 215, 0.35), 0 4px 14px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.58), 0 0 0 1px rgba(255, 255, 255, 0.05);
     }
     h1 {
       font-size: 1.6em;
       font-weight: 700;
-      background: linear-gradient(180deg, #FFFFFF 0%, #D1F7F2 100%);
+      background: linear-gradient(180deg, #FFFFFF 0%, #F4F4F4 100%);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 6px;
       letter-spacing: -0.5px;
-      text-shadow: 0 0 30px rgba(74, 242, 215, 0.35);
+      text-shadow: 0 0 30px rgba(255, 255, 255, 0.35);
     }
     .subtitle {
       font-size: 0.9em;
@@ -131,7 +129,7 @@
 
     .btn-menu:hover {
       transform: translateY(-3px);
-      box-shadow: 0 0 25px -2px rgba(74, 242, 215, 0.25), 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 25px -2px rgba(255, 255, 255, 0.25), 0 10px 25px -5px rgba(0, 0, 0, 0.4);
       border-color: var(--accent);
     }
 
@@ -143,9 +141,9 @@
       justify-content: center;
       font-size: 26px;
       flex-shrink: 0;
-      background: rgba(74, 242, 215, 0.08);
+      background: rgba(255, 255, 255, 0.08);
       color: var(--accent);
-      border: 1px solid rgba(74, 242, 215, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       line-height: 1;
       padding-bottom: 2px;
     }
@@ -175,7 +173,7 @@
 <body>
 
   <div class="header">
-    <div class="logo-icon"><img src="icons/lambretta.svg" alt="Lambretta Ekkachai"></div>
+    <div class="logo-icon"><img src="icons/zontes-logo.jpg" alt="Lambretta Ekkachai"></div>
     <h1>ระบบเช็กอินหน้างาน</h1>
     <p class="subtitle">Lambretta Ekkachai — Face Recognition &amp; GPS Check-in</p>
   </div>
@@ -219,30 +217,30 @@
   <div class="w-full max-w-4xl mt-12 space-y-8 animate-[fadeInUp_0.6s_ease_both]">
 
     <!-- ตารางเช็กอินหน้างาน -->
-    <div class="bg-[#0B222E] rounded-xl shadow-[0_0_20px_-5px_rgba(74,242,215,0.2)] border border-[#144A46] overflow-hidden relative">
-      <div class="absolute top-0 left-0 w-1 h-full bg-[#4AF2D7] shadow-[0_0_12px_rgba(74,242,215,0.8)]"></div>
-      <div class="bg-[#0B222E] px-5 py-4 border-b border-[#144A46]">
-        <h3 class="text-[#D1F7F2] font-semibold text-[15px] flex items-center gap-2 flex-wrap">
-          <span class="text-[#4AF2D7] text-lg">📍</span>
+    <div class="bg-[#121315] rounded-xl shadow-[0_0_20px_-5px_rgba(255,255,255,0.2)] border border-[#252629] overflow-hidden relative">
+      <div class="absolute top-0 left-0 w-1 h-full bg-[#FFFFFF] shadow-[0_0_12px_rgba(255,255,255,0.8)]"></div>
+      <div class="bg-[#121315] px-5 py-4 border-b border-[#252629]">
+        <h3 class="text-[#F4F4F4] font-semibold text-[15px] flex items-center gap-2 flex-wrap">
+          <span class="text-[#FFFFFF] text-lg">📍</span>
           เช็กอินหน้างานประจำวันที่
-          <span id="todayDateLabelSite" class="ml-1 text-[#4AF2D7] font-bold bg-[rgba(74,242,215,0.08)] px-2 py-0.5 rounded-md border border-[#1E6B65]">--/--/----</span>
+          <span id="todayDateLabelSite" class="ml-1 text-[#FFFFFF] font-bold bg-[rgba(255,255,255,0.08)] px-2 py-0.5 rounded-md border border-[#3A3B3E]">--/--/----</span>
         </h3>
       </div>
       <div class="overflow-x-auto custom-scrollbar p-0">
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="bg-[#0E2B36]">
-              <th class="border-y border-r border-[#144A46] px-1 sm:px-4 py-2 sm:py-3.5 text-[11px] sm:text-[14px] font-semibold text-[#3DE0C6] text-center whitespace-nowrap first:border-l-0">เวลา</th>
-              <th class="border border-[#144A46] px-2 sm:px-4 py-2 sm:py-3.5 text-[12px] sm:text-[14px] font-semibold text-[#3DE0C6] text-center w-full sm:w-2/5">ชื่อพนักงาน</th>
-              <th class="border border-[#144A46] px-1 sm:px-4 py-2 sm:py-3.5 text-[11px] sm:text-[14px] font-semibold text-[#3DE0C6] text-center whitespace-nowrap">แผนที่</th>
-              <th class="border-y border-l border-[#144A46] px-1 sm:px-4 py-2 sm:py-3.5 text-[11px] sm:text-[14px] font-semibold text-[#3DE0C6] text-center whitespace-nowrap last:border-r-0">หมายเหตุ</th>
+            <tr class="bg-[#1F2022]">
+              <th class="border-y border-r border-[#252629] px-1 sm:px-4 py-2 sm:py-3.5 text-[11px] sm:text-[14px] font-semibold text-[#D7D7D7] text-center whitespace-nowrap first:border-l-0">เวลา</th>
+              <th class="border border-[#252629] px-2 sm:px-4 py-2 sm:py-3.5 text-[12px] sm:text-[14px] font-semibold text-[#D7D7D7] text-center w-full sm:w-2/5">ชื่อพนักงาน</th>
+              <th class="border border-[#252629] px-1 sm:px-4 py-2 sm:py-3.5 text-[11px] sm:text-[14px] font-semibold text-[#D7D7D7] text-center whitespace-nowrap">แผนที่</th>
+              <th class="border-y border-l border-[#252629] px-1 sm:px-4 py-2 sm:py-3.5 text-[11px] sm:text-[14px] font-semibold text-[#D7D7D7] text-center whitespace-nowrap last:border-r-0">หมายเหตุ</th>
             </tr>
           </thead>
-          <tbody id="siteCheckinBody" class="bg-[#0B222E] text-[#D1F7F2]">
+          <tbody id="siteCheckinBody" class="bg-[#121315] text-[#F4F4F4]">
             <tr>
               <td colspan="4" class="p-8 text-center">
-                <div class="flex flex-col items-center justify-center text-[#86ABA6] space-y-2">
-                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#4AF2D7]"></div>
+                <div class="flex flex-col items-center justify-center text-[#A0A1A3] space-y-2">
+                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#FFFFFF]"></div>
                   <span class="text-[14px]">กำลังโหลดข้อมูล...</span>
                 </div>
               </td>
@@ -256,20 +254,20 @@
 
   <!-- Modal สำหรับหมายเหตุ -->
   <div id="remarkModal" class="hidden fixed inset-0 z-[9999] bg-[rgba(6,21,29,0.75)] backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
-    <div class="bg-[#0B222E] border border-[#144A46] rounded-xl shadow-[0_0_35px_-5px_rgba(74,242,215,0.25)] w-full max-w-sm flex flex-col overflow-hidden transform scale-100 transition-transform">
-      <div class="bg-gradient-to-r from-[#0E2B36] to-[#0B222E] px-5 py-3.5 flex justify-between items-center border-b border-[#144A46]">
-        <h3 class="text-[#D1F7F2] font-semibold text-[15px] flex items-center gap-2">
-          <span class="text-[#4AF2D7] text-lg">💬</span> ข้อความหมายเหตุ
+    <div class="bg-[#121315] border border-[#252629] rounded-xl shadow-[0_0_35px_-5px_rgba(255,255,255,0.25)] w-full max-w-sm flex flex-col overflow-hidden transform scale-100 transition-transform">
+      <div class="bg-gradient-to-r from-[#1F2022] to-[#121315] px-5 py-3.5 flex justify-between items-center border-b border-[#252629]">
+        <h3 class="text-[#F4F4F4] font-semibold text-[15px] flex items-center gap-2">
+          <span class="text-[#FFFFFF] text-lg">💬</span> ข้อความหมายเหตุ
         </h3>
-        <button onclick="closeRemark()" class="text-[#86ABA6] hover:text-[#4AF2D7] transition-colors font-bold p-1 text-xl leading-none outline-none">
+        <button onclick="closeRemark()" class="text-[#A0A1A3] hover:text-[#FFFFFF] transition-colors font-bold p-1 text-xl leading-none outline-none">
           &times;
         </button>
       </div>
-      <div class="p-6 bg-[#0B222E] min-h-[120px] flex items-center justify-center">
-        <p id="remarkModalTextDisplay" class="text-[#D1F7F2] text-[15px] text-center w-full break-words leading-relaxed"></p>
+      <div class="p-6 bg-[#121315] min-h-[120px] flex items-center justify-center">
+        <p id="remarkModalTextDisplay" class="text-[#F4F4F4] text-[15px] text-center w-full break-words leading-relaxed"></p>
       </div>
-      <div class="p-4 bg-[#0E2B36] border-t border-[#144A46] flex justify-center">
-        <button onclick="closeRemark()" class="px-6 py-2 bg-[#0B222E] border border-[#1E6B65] hover:border-[#4AF2D7] hover:text-[#4AF2D7] text-[#D1F7F2] font-medium rounded-lg text-[14px] shadow-sm transition-all outline-none">
+      <div class="p-4 bg-[#1F2022] border-t border-[#252629] flex justify-center">
+        <button onclick="closeRemark()" class="px-6 py-2 bg-[#121315] border border-[#3A3B3E] hover:border-[#FFFFFF] hover:text-[#FFFFFF] text-[#F4F4F4] font-medium rounded-lg text-[14px] shadow-sm transition-all outline-none">
           ปิดหน้าต่าง
         </button>
       </div>
@@ -351,7 +349,7 @@
         return;
       }
       if (!data || !Array.isArray(data) || data.length === 0) {
-        body.innerHTML = `<tr><td colspan="${colSpan}" class="p-8 text-center text-[#86ABA6] text-[14px]">ไม่มีข้อมูลวันนี้</td></tr>`;
+        body.innerHTML = `<tr><td colspan="${colSpan}" class="p-8 text-center text-[#A0A1A3] text-[14px]">ไม่มีข้อมูลวันนี้</td></tr>`;
         return;
       }
 
@@ -359,31 +357,31 @@
         const timeIn = escapeHtml(formatTime(row['เวลา']));
 
         const mapUrl = safeExternalUrl(row['Google Map Link']);
-        const linkColor = 'text-[#3DE0C6]';
+        const linkColor = 'text-[#D7D7D7]';
 
         const mapLink = mapUrl
           ? `<a href="${escapeHtml(mapUrl)}" target="_blank" rel="noopener noreferrer" class="${linkColor} text-[11px] sm:text-[14px] underline decoration-1 underline-offset-4">ดูพิกัด</a>`
-          : `<span class="text-[#3D5A57]">-</span>`;
+          : `<span class="text-[#55575A]">-</span>`;
 
         const rawRemark = row['หมายเหตุ'] || '';
         const safeRemark = encodeURIComponent(rawRemark).replace(/'/g, "%27");
         const remarkBtn = rawRemark.trim() !== ''
           ? `<button onclick="openRemark('${safeRemark}')" class="${linkColor} text-[11px] sm:text-[14px] underline decoration-1 underline-offset-4">ดูหมายเหตุ</button>`
-          : `<span class="text-[#3D5A57]">-</span>`;
+          : `<span class="text-[#55575A]">-</span>`;
 
         return `
-          <tr class="hover:bg-[#0E2B36]">
-            <td class="border-y border-r border-[#144A46] px-1 py-2 text-[11px] sm:text-[14px] text-center">${timeIn}</td>
-            <td class="border border-[#144A46] px-2 py-2 text-[12px] sm:text-[14px] font-medium">${escapeHtml(row['ชื่อ'] || '-')}</td>
-            <td class="border border-[#144A46] px-1 py-2 text-center">${mapLink}</td>
-            <td class="border-y border-l border-[#144A46] px-1 py-2 text-center">${remarkBtn}</td>
+          <tr class="hover:bg-[#1F2022]">
+            <td class="border-y border-r border-[#252629] px-1 py-2 text-[11px] sm:text-[14px] text-center">${timeIn}</td>
+            <td class="border border-[#252629] px-2 py-2 text-[12px] sm:text-[14px] font-medium">${escapeHtml(row['ชื่อ'] || '-')}</td>
+            <td class="border border-[#252629] px-1 py-2 text-center">${mapLink}</td>
+            <td class="border-y border-l border-[#252629] px-1 py-2 text-center">${remarkBtn}</td>
           </tr>`;
       }).join('');
     }
 
     if (!GAS_URL) {
       document.getElementById('apiWarning').style.display = 'block';
-      document.getElementById('siteCheckinBody').innerHTML = `<tr><td colspan="4" class="p-8 text-center text-[#86ABA6] text-[14px]">ยังไม่ได้ตั้งค่า API</td></tr>`;
+      document.getElementById('siteCheckinBody').innerHTML = `<tr><td colspan="4" class="p-8 text-center text-[#A0A1A3] text-[14px]">ยังไม่ได้ตั้งค่า API</td></tr>`;
     } else {
       loadTodayData();
       setInterval(() => {

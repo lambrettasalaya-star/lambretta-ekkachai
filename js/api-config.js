@@ -4,7 +4,7 @@
 //  2) นำ URL ที่ได้ (ลงท้ายด้วย /exec) มาวางแทนที่ค่าว่างด้านล่าง
 //  หรือจะไปกรอกในหน้า config.html ของเว็บก็ได้ (เก็บใน localStorage)
 // ============================================================
-const GAS_API_URL = '';
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbw8EzzDtp5bunB6ZHw_qvSTvK2lnSacY9VVbz_01k6gm1G7TEFYJRlijJD1TFMzlI5B/exec';
 const SITE_CODE = 'ekkachai';
 const SITE_NAME = 'Lambretta Ekkachai';
 
